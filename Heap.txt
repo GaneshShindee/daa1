@@ -1,0 +1,195 @@
+
+//HeapSort////////////////////////////////////////////////////////////////////////////////////
+public class HeapSort {
+    public static void heapify(int[] arr, int n, int i) {
+        int largest = i;
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+        if (left < n && arr[left] > arr[largest]) largest = left;
+        if (right < n && arr[right] > arr[largest]) largest = right;
+        if (largest != i) {
+            int swap = arr[i];
+            arr[i] = arr[largest];
+            arr[largest] = swap;
+            heapify(arr, n, largest);
+        }
+    }
+    public static void heapSort(int[] arr) {
+        int n = arr.length;
+        for (int i = n / 2 - 1; i >= 0; i--) heapify(arr, n, i);
+        for (int i = n - 1; i > 0; i--) {
+            int temp = arr[0];
+            arr[0] = arr[i];
+            arr[i] = temp;
+            heapify(arr, i, 0);
+        }
+    }
+    public static void main(String[] args) {
+        int[] arr = {4, 10, 3, 5, 1};
+        heapSort(arr);
+        System.out.println("Sorted array: ");
+        for (int num : arr) System.out.print(num + " ");
+    }
+}
+
+//Knap
+//Coin////////////////////////////////////////////////////////////////////////////////////
+public class coin {
+    public static void main(String[] args){
+        int[] coins = {1,2,5};
+        int amount = 11;
+        int result = dp(coins, amount);
+        System.out.println("The fewest number of coins needed: " + result);
+    }
+    private static int dp(int[] coins, int amount){
+        int n = coins.length;
+        int[][] dp = new int[n+1][amount + 1];
+        for(int i=0;i<=n;i++){
+            dp[i][0] = 0;
+        }
+        for(int j=1;j<=amount;j++){
+            dp[0][j] = amount+1;
+        }
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=amount;j++){
+                if(coins[i-1] > j) dp[i][j] = dp[i-1][j];
+                else dp[i][j] = Math.min(dp[i-1][j], dp[i][j-coins[i-1]]+1);
+            }
+        }
+        return dp[n][amount] == Integer.MAX_VALUE - 1 ? -1 : dp[n][amount];
+    }
+}
+Sack////////////////////////////////////////////////////////////////////////////////////
+public class Knapsack {
+    public static void main(String[] args) {
+        int[] weights = {2, 3, 4, 5};
+        int[] values = {3, 4, 5, 6};
+        int capacity = 5;
+        int n = weights.length;
+        int result = knapsack(weights, values, n, capacity);
+        System.out.println("Maximum value in Knapsack = " + result);
+    }
+    public static int knapsack(int[] weights, int[] values, int n, int capacity) {
+        int[][] dp = new int[n + 1][capacity + 1];
+        for(int i = 0; i <= n; i++){
+            for(int w = 0; w <= capacity; w++){
+                if(i == 0 || w == 0){
+                    dp[i][w] = 0;
+                }else{
+                    if(weights[i - 1] <= w) dp[i][w] = Math.max(dp[i - 1][w], dp[i - 1][w - weights[i - 1]] + values[i - 1]);
+                    else dp[i][w] = dp[i - 1][w];
+                }
+            }
+        }
+        return dp[n][capacity];
+    }
+}
+
+//BFS////////////////////////////////////////////////////////////////////////////////////
+import java.util.*;
+class Solution {
+    public ArrayList<Integer> bfsOfGraph(int V, ArrayList<ArrayList<Integer>> adj) {
+        ArrayList<Integer> bfs = new ArrayList<>();
+        boolean vis[] = new boolean[V];
+        Queue<Integer> q = new LinkedList<>();
+        q.add(0);
+        vis[0] = true;
+        while (!q.isEmpty()) {
+            Integer node = q.poll();
+            bfs.add(node);
+            for (int neighbor : adj.get(node)) {
+                if (!vis[neighbor]) {
+                    vis[neighbor] = true;
+                    q.add(neighbor);
+                }
+            }
+        }
+        return bfs;
+    }
+    public static void main(String args[]) {
+        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            adj.add(new ArrayList<>());
+        }
+        adj.get(0).add(1);
+        adj.get(1).add(0);
+        adj.get(0).add(4);
+        adj.get(4).add(0);
+        adj.get(1).add(2);
+        adj.get(2).add(1);
+        adj.get(1).add(3);
+        adj.get(3).add(1);
+        
+        Solution s = new Solution(); 
+        ArrayList<Integer> ans = s.bfsOfGraph(5, adj);
+        int n = ans.size(); 
+        for (int i = 0; i < n; i++) {
+            System.out.print(ans.get(i) + " "); 
+        }
+    }
+}
+
+//Kruskal////////////////////////////////////////////////////////////////////////////////////
+class Edge implements Comparable<Edge> {
+    int src, dest, weight;
+    public Edge(int src, int dest, int weight) {
+        this.src = src;
+        this.dest = dest;
+        this.weight = weight;
+    }
+    @Override
+    public int compareTo(Edge other) {
+        return this.weight - other.weight;
+    }
+}
+public class KruskalsAlgorithm {
+    static int find(int[] parent, int i) {
+        if (parent[i] == i) return i;
+        return find(parent, parent[i]);
+    }
+    static void union(int[] parent, int[] rank, int x, int y) {
+        int rootX = find(parent, x);
+        int rootY = find(parent, y);
+        if (rank[rootX] < rank[rootY]) {
+            parent[rootX] = rootY;
+        } else if (rank[rootX] > rank[rootY]) {
+            parent[rootY] = rootX;
+        } else {
+            parent[rootY] = rootX;
+            rank[rootX]++;
+        }
+    }
+    public static void kruskal(List<Edge> edges, int V) {
+        Collections.sort(edges);
+        int[] parent = new int[V];
+        int[] rank = new int[V];
+        for (int i = 0; i < V; i++) {
+            parent[i] = i;
+            rank[i] = 0;
+        }
+        List<Edge> mst = new ArrayList<>();
+        for (Edge edge : edges) {
+            int x = find(parent, edge.src);
+            int y = find(parent, edge.dest);
+            if (x != y) {
+                mst.add(edge);
+                union(parent, rank, x, y);
+            }
+        }
+        System.out.println("Edges in MST:");
+        for (Edge edge : mst) {
+            System.out.println(edge.src + " - " + edge.dest + " : " + edge.weight);
+        }
+    }
+    public static void main(String[] args) {
+        int V = 4;
+        List<Edge> edges = Arrays.asList(
+            new Edge(0, 1, 10),
+            new Edge(0, 2, 6),
+            new Edge(0, 3, 5),
+            new Edge(1, 3, 15),
+            new Edge(2, 3, 4)
+        );
+        kruskal(edges, V);
+    }
+}

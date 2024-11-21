@@ -1,0 +1,43 @@
+
+//Prims////////////////////////////////////////////////////////////////////////////////////
+public class prims {
+    static final int V = 5;
+    public static void primMST(int[][]G) {
+        boolean[] selected = new boolean[V];
+        int noEdge = 0;
+        selected[0] = true;
+        System.out.println("Edges in the Minimum Spanning Tree:");
+        while (noEdge < V - 1) {
+            int min = Integer.MAX_VALUE;
+            int x = -1;
+            int y = -1;
+            
+            for (int i = 0; i < V; i++) {
+                if (selected[i]) {
+                    for (int j = 0; j < V; j++) {
+                        if (!selected[j] && G[i][j] != 0) {
+                            if (min > G[i][j]) {
+                                min = G[i][j];
+                                x = i;
+                                y = j;
+                            }
+                        }
+                    }
+                }
+            }
+            System.out.println(x + " - " + y + " : " + G[x][y]);
+            selected[y] = true;
+            noEdge++;
+        }
+    }
+    public static void main(String[] args) {
+        int [][]G = new int[][] {
+                {0, 2, 0, 6, 0},
+                {2, 0, 3, 8, 5},
+                {0, 3, 0, 0, 7},
+                {6, 8, 0, 0, 9},
+                {0, 5, 7, 9, 0}
+        };
+        primMST(G);
+    }
+}
